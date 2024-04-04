@@ -5,7 +5,7 @@ const Livros = require('./models/Livros');
 server.use(express.json());
 
 server.get('/', (req,res) => {
-    return res.json({mensagem: 'A API está funcionando'})
+    return res.json({mensagem: 'A API está funcionando!!'})
 });
 
 server.listen(8080, () => {
