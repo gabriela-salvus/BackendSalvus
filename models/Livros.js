@@ -21,9 +21,9 @@ const Livros = db.define('livros', {
         allowNull: false,
     },
     status: {
-        type: Sequelize.ENUM('em estoque', 'alugado'),
+        type: Sequelize.ENUM('EM ESTOQUE', 'ALUGADO'),
         allowNull: false,
-        defaultValue: 'em estoque'
+        defaultValue: 'EM ESTOQUE'
     }
 });
 Livros.sync();
