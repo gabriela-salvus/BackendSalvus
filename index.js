@@ -13,6 +13,18 @@ server.listen(8080, () => {
 });
 
 server.post('/cadastrar',async (req,res) => {
+    if (req.body.titulo) {
+        req.body.titulo = req.body.titulo.toUpperCase();
+    }
+    
+    if (req.body.genero) {
+        req.body.genero = req.body.genero.toUpperCase();
+    }
+
+    if (req.body.status) {
+        req.body.status = req.body.status.toUpperCase();
+    }
+
     console.log(req.body);
 
     await Livros.create(req.body)
