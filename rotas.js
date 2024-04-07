@@ -72,7 +72,7 @@ server.put('/livros/id', async (req, res) => {
             return res.status(404).json({ mensagem: 'Livro não encontrado' });
         }
         
-        // Transformar título, gênero e status em maiúsculas
+        // Transformar título, gênero em maiúsculas
         if (req.body.titulo) {
             req.body.titulo = req.body.titulo.toUpperCase();
         }
