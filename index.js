@@ -4,15 +4,25 @@ const Livros = require('./models/Livros');
 
 server.use(express.json());
 
-server.get('/', (req,res) => {
-    return res.json({mensagem: 'A API está funcionando!!'})
+// Rota para obter todos os livros
+server.get('/livros', async (req, res) => {
+    try {
+        const livros = await Livros.findAll();
+        res.json(livros);
+    } catch (error) {
+        console.error('Erro ao obter livros:', error);
+        res.status(500).json({ mensagem: 'Erro interno do servidor' });
+    }
 });
 
-server.listen(8080, () => {
-    console.log('Servidor está funcionando...')
+server.get('/ping', async (req, res) => {
+        res.status(200).json({mensagem: 'pong'});
 });
 
-server.post('/cadastrar',async (req,res) => {
+
+// Rota para criar um novo livro
+server.post('/livros', async (req, res) => {
+    // Transformar título, gênero em maiúsculas
     if (req.body.titulo) {
         req.body.titulo = req.body.titulo.toUpperCase();
     }
@@ -22,25 +32,85 @@ server.post('/cadastrar',async (req,res) => {
     }
 
     console.log(req.body);
-    // Verificar se o livro já existe no banco de dados
-    const existingBook = await Livros.findOne({ where: { titulo: req.body.titulo } });
 
-    if (existingBook) {
-        return res.status(400).json({
-            mensagem: 'Erro: Livro já cadastrado'
+    try {
+        // Verificar se o livro já existe no banco de dados
+        const existingBook = await Livros.findOne({ where: { titulo: req.body.titulo } });
+
+        if (existingBook) {
+            return res.status(400).json({
+                mensagem: 'Erro: Livro já cadastrado'
+            });
+        }
+
+        // Se o livro não existe, criar um novo livro
+        const novoLivro = await Livros.create(req.body);
+        res.status(201).json({
+            mensagem: 'Livro cadastrado com sucesso!',
+            livro: novoLivro
         });
+    } catch (error) {
+        console.error('Erro ao cadastrar livro:', error);
+        res.status(400).json({ mensagem: 'Erro ao cadastrar livro' });
     }
-    // Se o livro não existe, criar um novo livro
-    await Livros.create(req.body)
-    .then(() => {
-        return res.json({
-            mensagem: 'Livro cadastrado com sucesso!'
-        });
-    }).catch(() => {
-        return res.status(400).json({
-            mensagem: 'Erro: Livro não cadastrado com sucesso'
-        });
-    });
+});
 
-    //res.send('Página de cadastro');
+// Rota para obter um livro específico por ID
+server.get('/livros/:id', async (req, res) => {
+    try {
+        const livro = await Livros.findByPk(req.params.id);
+        if (!livro) {
+            return res.status(404).json({ mensagem: 'Livro não encontrado' });
+        }
+        res.json(livro);
+    } catch (error) {
+        console.error('Erro ao obter livro:', error);
+        res.status(500).json({ mensagem: 'Erro interno do servidor' });
+    }
+});
+
+// Rota para atualizar um livro por ID
+server.put('/livros/:id', async (req, res) => {
+    try {
+        const livro = await Livros.findByPk(req.params.id);
+        if (!livro) {
+            return res.status(404).json({ mensagem: 'Livro não encontrado' });
+        }
+        
+        // Transformar título, gênero em maiúsculas
+        if (req.body.titulo) {
+            req.body.titulo = req.body.titulo.toUpperCase();
+        }
+        
+        if (req.body.genero) {
+            req.body.genero = req.body.genero.toUpperCase();
+        }
+        
+
+        await livro.update(req.body);
+        res.json(livro);
+    } catch (error) {
+        console.error('Erro ao atualizar livro:', error);
+        res.status(500).json({ mensagem: 'Erro interno do servidor' });
+    }
+});
+
+
+// Rota para excluir um livro por ID
+server.delete('/livros/:id', async (req, res) => {
+    try {
+        const livro = await Livros.findByPk(req.params.id);
+        if (!livro) {
+            return res.status(404).json({ mensagem: 'Livro não encontrado' });
+        }
+        await livro.destroy();
+        res.json({ mensagem: 'Livro excluído com sucesso' });
+    } catch (error) {
+        console.error('Erro ao excluir livro:', error);
+        res.status(500).json({ mensagem: 'Erro interno do servidor' });
+    }
+});
+
+server.listen(8080, () => {
+    console.log('Servidor está funcionando...')
 });
