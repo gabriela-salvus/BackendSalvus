@@ -21,11 +21,11 @@ const Livros = db.define('livros', {
         allowNull: false,
     },
     status: {
-        type: Sequelize.ENUM('EM ESTOQUE', 'ALUGADO'),
+        type: Sequelize.INTEGER,
         allowNull: false,
-        defaultValue: 'EM ESTOQUE'
+        defaultValue: 1 // Valor padrão para o em estoque
     }
 });
-Livros.sync();
+Livros.sync; 
 
 module.exports = Livros;
