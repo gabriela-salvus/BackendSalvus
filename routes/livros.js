@@ -1,15 +1,8 @@
 const express = require('express');
-const server = express();
-const Livros = require('./models/Livros');
-const outrosRota = require('./routes/outros');
-const livrosRota = require('./routes/livros');
-
-server.use(express.json());
-server.use(outrosRota);
-server.use(livrosRota);
+const routes = express.Router();
 
 // Rota para obter todos os livros
-server.get('/livros', async (req, res) => {
+routes.get('/livros', async (req, res) => {
     try {
         const livros = await Livros.findAll();
         res.json(livros);
@@ -19,13 +12,8 @@ server.get('/livros', async (req, res) => {
     }
 });
 
-server.get('/ping', async (req, res) => {
-        res.status(200).json({mensagem: 'pong'});
-});
-
-
 // Rota para criar um novo livro
-server.post('/livros', async (req, res) => {
+routes.post('/livros', async (req, res) => {
     // Transformar título, gênero em maiúsculas
     if (req.body.titulo) {
         req.body.titulo = req.body.titulo.toUpperCase();
@@ -60,7 +48,7 @@ server.post('/livros', async (req, res) => {
 });
 
 // Rota para obter um livro específico por ID
-server.get('/livros/:id', async (req, res) => {
+routes.get('/livros/:id', async (req, res) => {
     try {
         const livro = await Livros.findByPk(req.params.id);
         if (!livro) {
@@ -74,7 +62,7 @@ server.get('/livros/:id', async (req, res) => {
 });
 
 // Rota para atualizar um livro por ID
-server.put('/livros/:id', async (req, res) => {
+routes.put('/livros/:id', async (req, res) => {
     try {
         const livro = await Livros.findByPk(req.params.id);
         if (!livro) {
@@ -101,7 +89,7 @@ server.put('/livros/:id', async (req, res) => {
 
 
 // Rota para excluir um livro por ID
-server.delete('/livros/:id', async (req, res) => {
+routes.delete('/livros/:id', async (req, res) => {
     try {
         const livro = await Livros.findByPk(req.params.id);
         if (!livro) {
@@ -114,7 +102,4 @@ server.delete('/livros/:id', async (req, res) => {
         res.status(500).json({ mensagem: 'Erro interno do servidor' });
     }
 });
-
-server.listen(8080, () => {
-    console.log('Servidor está funcionando...')
-});
+module.exports = routes;
