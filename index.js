@@ -1,12 +1,14 @@
 const express = require('express');
 const server = express();
 const Livros = require('./models/Livros');
-const outrosRota = require('./routes/outros');
-const livrosRota = require('./routes/livros');
+const outrosRota = require('./routes/outros.js');
+
+const cors = require('cors');
 
 server.use(express.json());
+server.use(cors());
 server.use(outrosRota);
-server.use(livrosRota);
+
 
 // Rota para obter todos os livros
 server.get('/livros', async (req, res) => {
@@ -73,31 +75,54 @@ server.get('/livros/:id', async (req, res) => {
     }
 });
 
-// Rota para atualizar um livro por ID
+// Rota para editar, alugar ou devolver um livro por ID
 server.put('/livros/:id', async (req, res) => {
     try {
         const livro = await Livros.findByPk(req.params.id);
         if (!livro) {
             return res.status(404).json({ mensagem: 'Livro não encontrado' });
         }
-        
-        // Transformar título, gênero em maiúsculas
-        if (req.body.titulo) {
-            req.body.titulo = req.body.titulo.toUpperCase();
-        }
-        
-        if (req.body.genero) {
-            req.body.genero = req.body.genero.toUpperCase();
-        }
-        
 
-        await livro.update(req.body);
-        res.json(livro);
+        // Verificar se o cliente enviou o status no corpo da solicitação
+        if ('status' in req.body) {
+            const novoStatus = req.body.status;
+
+            // Verificar se o novo status é válido (0 para alugado, 1 para em estoque)
+            if (novoStatus !== 0 && novoStatus !== 1) {
+                return res.status(400).json({ mensagem: 'Status inválido. Use 0 para alugado ou 1 para em estoque' });
+            }
+
+            // Se o livro estiver sendo alugado, alterar para "alugado" (0), caso contrário, alterar para "em estoque" (1)
+            if (novoStatus === 0 && livro.status === 1) {
+                livro.status = 0;
+                res.json({ mensagem: 'Livro alugado com sucesso' });
+            } else if (novoStatus === 1 && livro.status === 0) {
+                livro.status = 1;
+                res.json({ mensagem: 'Livro devolvido com sucesso' });
+            } else {
+                res.status(400).json({ mensagem: 'Operação inválida. Verifique o status atual do livro' });
+            }
+        } else {
+            // Atualizar outros campos do livro, se fornecidos no corpo da solicitação
+            if ('titulo' in req.body) {
+                livro.titulo = req.body.titulo;
+            }
+            if ('ano' in req.body) {
+                livro.ano = req.body.ano;
+            }
+            if ('genero' in req.body) {
+                livro.genero = req.body.genero;
+            }
+
+            await livro.save();
+            res.json({ mensagem: 'Livro atualizado com sucesso' });
+        }
     } catch (error) {
-        console.error('Erro ao atualizar livro:', error);
+        console.error('Erro ao editar/alugar/devolver livro:', error);
         res.status(500).json({ mensagem: 'Erro interno do servidor' });
     }
 });
+
 
 
 // Rota para excluir um livro por ID
