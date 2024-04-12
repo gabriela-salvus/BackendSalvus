@@ -1,8 +1,9 @@
 const express = require('express');
-const routes = express.Router();
+const router = express.Router();
+const Livros = require('../models/Livros');
 
 // Rota para obter todos os livros
-routes.get('/livros', async (req, res) => {
+router.get('/livros', async (req, res) => {
     try {
         const livros = await Livros.findAll();
         res.json(livros);
@@ -13,7 +14,7 @@ routes.get('/livros', async (req, res) => {
 });
 
 // Rota para criar um novo livro
-routes.post('/livros', async (req, res) => {
+router.post('/livros', async (req, res) => {
     // Transformar título, gênero em maiúsculas
     if (req.body.titulo) {
         req.body.titulo = req.body.titulo.toUpperCase();
@@ -48,7 +49,7 @@ routes.post('/livros', async (req, res) => {
 });
 
 // Rota para obter um livro específico por ID
-routes.get('/livros/:id', async (req, res) => {
+router.get('/livros/:id', async (req, res) => {
     try {
         const livro = await Livros.findByPk(req.params.id);
         if (!livro) {
@@ -62,7 +63,7 @@ routes.get('/livros/:id', async (req, res) => {
 });
 
 // Rota para atualizar um livro por ID
-routes.put('/livros/:id', async (req, res) => {
+router.put('/livros/:id', async (req, res) => {
     try {
         const livro = await Livros.findByPk(req.params.id);
         if (!livro) {
@@ -89,7 +90,7 @@ routes.put('/livros/:id', async (req, res) => {
 
 
 // Rota para excluir um livro por ID
-routes.delete('/livros/:id', async (req, res) => {
+router.delete('/livros/:id', async (req, res) => {
     try {
         const livro = await Livros.findByPk(req.params.id);
         if (!livro) {
@@ -102,4 +103,4 @@ routes.delete('/livros/:id', async (req, res) => {
         res.status(500).json({ mensagem: 'Erro interno do servidor' });
     }
 });
-module.exports = routes;
+module.exports = router;
