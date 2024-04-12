@@ -1,9 +1,9 @@
 const express = require('express');
-const routes = express.Router();
+const router = express.Router();
+const Livros = require('../models/Livros');
 
-
-routes.get('/ping', async (req, res) => {
+router.get('/ping', async (req, res) => {
     res.status(200).json({mensagem: 'pong'});
 });
 
-module.exports = routes;
+module.exports = router;
