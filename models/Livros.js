@@ -1,31 +1,21 @@
-const Sequelize = require('sequelize');
-const db = require('./db');
+const knex = require('../database/db');
 
-const Livros = db.define('livros', {
-    id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        allowNull: false,
-        primaryKey:true
-    },
-    titulo: {
-        type: Sequelize.STRING,
-        allowNull: false,
-    },
-    ano: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-    },
-    genero: {
-        type: Sequelize.STRING,
-        allowNull: false,
-    },
-    status: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        defaultValue: 1 // Valor padrão para o em estoque
-    }
-});
-Livros.sync; 
+const Livros = async () => {
+  const tableExists = await knex.schema.hasTable('livros');
+  if (!tableExists) {
+    return knex.schema.createTable('livros', table => {
+      table.increments('id').primary();
+      table.string('titulo').notNullable();
+      table.integer('ano').notNullable();
+      table.string('genero').notNullable();
+      table.integer('status').notNullable().defaultTo(1);
+      table.timestamps(true, true); 
+    });
+  }
+};
 
 module.exports = Livros;
+
+
+
+//Livros.sync; 

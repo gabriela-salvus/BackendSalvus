@@ -1,17 +1,15 @@
 const express = require('express');
-const server = express();
-const outrosRota = require('./routes/outros');
-const livrosRoutes = require('./routes/livros');
-
+const router = express();
+const knex = require('./database/db');
 const cors = require('cors');
+const livros = require('./models/Livros');
 
-server.use(express.json());
-server.use(cors());
-server.use('/ping',outrosRota);
-server.use('/livros', livrosRoutes);
-
+router.use(express.json());
+router.use(cors());
 
 
-server.listen(8080, () => {
+router.listen(8080, () => {
     console.log('Servidor está funcionando...')
 });
+
+module.exports = router;
