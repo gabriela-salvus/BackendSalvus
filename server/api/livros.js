@@ -77,7 +77,7 @@ function Livros (knex) {
         
     };
     
-    this.update = async function (id, titulo, ano, genero) {
+    this.update = async function (id, titulo, ano, genero, status) {
         try {
             const validation = await this.knex("livros")
                 .where({ id })
@@ -85,6 +85,7 @@ function Livros (knex) {
                     titulo: titulo,
                     ano: ano,
                     genero: genero,
+                    status: status, 
                 });
     
             if (validation) {
