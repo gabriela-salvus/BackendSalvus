@@ -11,13 +11,13 @@ const routes = express.Router(knex);
 routes.get('/livros', verifyToken(), async (req, res, next) => {
     try {
         const livros = await Book.list();
-        console.log(livros);
         if ("error" in livros) {
           res.status(400).json({ statusCode: 400, message: livros }).end();
           return;
         }
-    
+        console.log('alo');
         res.status(200).json({ statusCode: 200, message: livros }).end();
+        console.log('tchau');
     } catch (error) {
         console.error(error);
         res.status(500).json({ statusCode: 500, message: 'Erro ao obter a lista de livros.' }).end();

@@ -8,7 +8,7 @@ function verifyToken() {
   const User = new Auth(knex);
 
   return async function (req, res, next) {
-
+    console.log('to aqui na auth',req.headers.authorization);
     const bearerToken = req.headers.authorization
       ? req.headers.authorization
       : "";

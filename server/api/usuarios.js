@@ -8,12 +8,12 @@ function Usuarios(knex, currentUser) {
     const usuarios = await this.knex
       .select("id", "name", "email")
       .from("usuarios");
-
+  
     if (!usuarios.length) {
-      return { error: "Nâo foi possível listar usuarios." };
+      return { error: "Não foi possível listar usuários." };
     }
-
-    return account;
+  
+    return usuarios;  
   };
 
   this.create = async function (name, email, password, status) {

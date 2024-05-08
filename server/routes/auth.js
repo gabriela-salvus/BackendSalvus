@@ -40,7 +40,7 @@ router.post("/logout", (req, res) => {
 
 
 //rota para pegar informaçoes dos usuarios usando o token 
-router.post("/me", (req, res) => {
+router.post("/login", (req, res) => {
   const bearerToken = req.headers.authorization
     ? req.headers.authorization
     : "";
